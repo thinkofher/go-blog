@@ -1,0 +1,5 @@
+FROM postgres:12-alpine
+
+ENV POSTGRES_PASSWORD secret_postgres
+ENV POSTGRES_USER postgres
+ENV POSTGRES_DB goblog
