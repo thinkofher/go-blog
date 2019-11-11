@@ -32,10 +32,10 @@ func main() {
 
 	r := mux.NewRouter()
 
-	r.Path("/").Handler(app.NewLoginHandler())
-	r.Path("/login").Handler(app.NewLoginHandler())
-	r.Path("/register").Handler(app.NewRegisterHandler())
-	r.PathPrefix("/static/").Handler(fs)
+	r.Path("/").Handler(app.NewLoginHandler()).Methods("GET", "POST")
+	r.Path("/login").Handler(app.NewLoginHandler()).Methods("GET", "POST")
+	r.Path("/register").Handler(app.NewRegisterHandler()).Methods("GET", "POST")
+	r.PathPrefix("/static/").Handler(fs).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
