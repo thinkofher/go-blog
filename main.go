@@ -1,31 +1,23 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/thinkofher/go-blog/app"
+	"github.com/thinkofher/go-blog/db"
 )
 
 func main() {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
 
-	db, err := sql.Open("postgres", psqlInfo)
+	dbwrapper, err := db.NewDBWrapper(CONFIG)
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
+	defer dbwrapper.DB.Close()
 
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
 	log.Println("Connection to database succesfull!")
 
 	fs := http.StripPrefix("/static/", http.FileServer(http.Dir("./static/")))
