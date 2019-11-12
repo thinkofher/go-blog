@@ -11,7 +11,7 @@ import (
 type DBClient interface {
 	// GetUser returns User data from database
 	// under given id number.
-	GetUser(id int) db.User
+	GetUser(username string) db.User
 }
 
 // Middleware used for user authentication,
