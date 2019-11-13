@@ -15,10 +15,10 @@
 		<div class="container">
 			<nav class="navbar navbar-light bg-light">
 				<a class="navbar-brand">go-blog</a>
-				{{ template "header" }}
+				{{ template "header" . }}
 			</nav>
 		</div>
-		<div class="container">{{ template "content" }}</div>
+		<div class="container">{{ template "content" . }}</div>
 
 		<!-- Bootstrap JS -->
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
