@@ -70,3 +70,28 @@ func (wrapper DBWrapper) SetUser(user User) error {
 
 	return nil
 }
+
+func (wrapper DBWrapper) GetUser(username string) (User, error) {
+	user := User{}
+	statement := `
+	SELECT
+		user_id, username, password,
+		email, created_on, last_login
+	FROM
+		blog_user
+	WHERE
+		username = $1;
+	`
+	row := wrapper.DB.QueryRow(statement, username)
+
+	err := row.Scan(&user.ID, &user.Username, &user.HashedPassword,
+		&user.Email, &user.CreatedOn, &user.LastLogin)
+	if err == sql.ErrNoRows {
+		// This means, there is no such user in database
+		return user, ErrNoUser
+	} else if err != nil {
+		panic(err)
+	}
+
+	return user, nil
+}
