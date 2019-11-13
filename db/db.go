@@ -2,10 +2,13 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
 	_ "github.com/lib/pq"
 )
+
+var ErrNoUser = errors.New("db: no such user in database")
 
 // PSQLConfig represents Postgres database config.
 type PSQLConfig struct {
