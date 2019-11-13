@@ -5,6 +5,10 @@ import (
 	"text/template"
 )
 
+const templatesBase string = "base"
+const templatesRootDir string = "templates"
+const templatesWildcard string = "*.tmpl"
+
 type BlogTemplate interface {
 	TemplateData() *PageData
 	Template() (*template.Template, error)
@@ -47,7 +51,3 @@ func (b blogTemplate) loadBase() (*template.Template, error) {
 func (b blogTemplate) loadTemplates(t *template.Template) (*template.Template, error) {
 	return t.ParseGlob(filepath.Join(templatesRootDir, b.dir, templatesWildcard))
 }
-
-const templatesBase string = "base"
-const templatesRootDir string = "templates"
-const templatesWildcard string = "*.tmpl"
