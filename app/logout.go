@@ -6,6 +6,8 @@ import (
 	"github.com/gorilla/sessions"
 )
 
+// Logout clears cookies containing user data and
+// redirect to the login page.
 func Logout(store *sessions.CookieStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, err := store.Get(r, SessionName)
