@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/gob"
 	"log"
 	"net/http"
 	"os"
@@ -17,6 +18,9 @@ var store *sessions.CookieStore
 
 func init() {
 	store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
+
+	// Register PublicUserData to use in store
+	gob.Register(db.PublicUserData{})
 }
 
 func main() {
@@ -37,6 +41,11 @@ func main() {
 	r.Path("/login").Handler(app.NewLoginHandler(dbwrapper, store)).Methods("GET", "POST")
 	r.Path("/register").Handler(app.NewRegisterHandler(dbwrapper, store)).Methods("GET", "POST")
 	r.PathPrefix("/static/").Handler(fs).Methods("GET")
+
+	authRouter := r.PathPrefix("/index").Subrouter()
+
+	authRouter.Path("").Handler(app.NewIndexHandler(store)).Methods("GET")
+	authRouter.Use(app.AuthenticationMiddleware(store))
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

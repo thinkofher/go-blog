@@ -13,7 +13,7 @@ type User struct {
 	// ID is unique to every user.
 	ID             int
 	Username       string
-	HashedPassword string
+	HashedPassword []byte
 	Email          string
 	CreatedOn      time.Time
 	LastLogin      time.Time
@@ -31,7 +31,7 @@ func NewUser(username, password, email string) (User, error) {
 
 	return User{
 		Username:       username,
-		HashedPassword: string(hashedPassword),
+		HashedPassword: hashedPassword,
 		Email:          email,
 		CreatedOn:      time.Now(),
 		LastLogin:      time.Now(),
