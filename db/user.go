@@ -37,3 +37,20 @@ func NewUser(username, password, email string) (User, error) {
 		LastLogin:      time.Now(),
 	}, nil
 }
+
+// ToPublicUserData transforms full User data
+// from database to PublicUserData to use in
+// cookie store.
+func (u User) ToPublicUserData() *PublicUserData {
+	return &PublicUserData{
+		ID:       u.ID,
+		Username: u.Username,
+	}
+}
+
+// PublicUserData represents user information
+// to store in cookies for authorization.
+type PublicUserData struct {
+	ID       int
+	Username string
+}
