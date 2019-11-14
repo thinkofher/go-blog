@@ -40,6 +40,7 @@ func main() {
 	r.Path("/").Handler(app.NewLoginHandler(dbwrapper, store)).Methods("GET", "POST")
 	r.Path("/login").Handler(app.NewLoginHandler(dbwrapper, store)).Methods("GET", "POST")
 	r.Path("/register").Handler(app.NewRegisterHandler(dbwrapper, store)).Methods("GET", "POST")
+	r.Path("/logout").HandlerFunc(app.Logout(store)).Methods("GET")
 	r.PathPrefix("/static/").Handler(fs).Methods("GET")
 
 	authRouter := r.PathPrefix("/index").Subrouter()
