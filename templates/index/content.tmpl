@@ -1,0 +1,6 @@
+{{ define "content" }}
+	{{ range $flash := .Flashes }}
+		<p>Message: {{ $flash }}</p>
+	{{ end }}
+	<p>This is sample index. Only for logged users.</p>
+{{ end }}
