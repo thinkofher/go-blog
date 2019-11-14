@@ -71,6 +71,13 @@ func (wrapper DBWrapper) SetUser(user User) error {
 	return nil
 }
 
+// GetUser returns user data in form of User struct.
+// Returns ErrNoUser, when there are not any user with
+// given username.
+// Pancics, when there aren't appropriate table in database
+// (check init.sql script for further information about data
+// structures in database).
+// TODO: Test it.
 func (wrapper DBWrapper) GetUser(username string) (User, error) {
 	user := User{}
 	statement := `
