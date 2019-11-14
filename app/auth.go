@@ -5,7 +5,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
-	"github.com/thinkofher/go-blog/db"
 )
 
 func AuthenticationMiddleware(store *sessions.CookieStore) mux.MiddlewareFunc {
@@ -17,9 +16,9 @@ func AuthenticationMiddleware(store *sessions.CookieStore) mux.MiddlewareFunc {
 				return
 			}
 
-			userCookie := session.Values[userCookieKey]
+			_, ok := session.Values[userCookieKey]
 
-			_, ok := userCookie.(db.PublicUserData)
+			// _, ok := userCookie.(db.PublicUserData)
 			if !ok {
 				session.AddFlash("You have to be logged in.")
 				err = session.Save(r, w)
