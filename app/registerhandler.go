@@ -49,7 +49,7 @@ func (h registerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		err = h.db.SetUser(user)
 		if err != nil {
-			session.AddFlash("Username or Password are already taken.")
+			session.AddFlash("Username or Email are already taken.")
 
 			err = session.Save(r, w)
 			if err != nil {
