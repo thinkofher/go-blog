@@ -8,7 +8,7 @@ import (
 )
 
 // AuthenticationMiddleware returns MiddlewareFunc, which uses
-// given CookieStore to authenticate is user is logged in.
+// given CookieStore to authenticate user, if is he logged in.
 func AuthenticationMiddleware(store *sessions.CookieStore) mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +36,7 @@ func AuthenticationMiddleware(store *sessions.CookieStore) mux.MiddlewareFunc {
 }
 
 // NonUsersOnly returns mux.MiddlewareFunc, which uses
-// given CookieStore to authenticate is user is logged out.
+// given CookieStore to authenticate user, if is he logged out.
 func NonUsersOnly(store *sessions.CookieStore) mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

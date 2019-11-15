@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/sessions"
+
 	"github.com/thinkofher/go-blog/app/register"
 	"github.com/thinkofher/go-blog/db"
 )
@@ -15,7 +16,8 @@ type registerHandler struct {
 	store *sessions.CookieStore
 }
 
-func NewRegisterHandler(db register.DBClient, store *sessions.CookieStore) *registerHandler {
+// NewRegisterHandler returns Handler for register page.
+func NewRegisterHandler(db register.DBClient, store *sessions.CookieStore) http.Handler {
 	return &registerHandler{
 		tmpl:  NewBlogTemplate("register", *NewPageData("Register")),
 		db:    db,
@@ -23,6 +25,7 @@ func NewRegisterHandler(db register.DBClient, store *sessions.CookieStore) *regi
 	}
 }
 
+// ServeHTTP satisfies http.Handler interface.
 func (h registerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := h.tmpl.Template()
 	if err != nil {

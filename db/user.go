@@ -6,6 +6,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// CRYPTOCOST contains value of cost specific for
+// go-blog application.
 const CRYPTOCOST = 14
 
 // User represents single user data from database.

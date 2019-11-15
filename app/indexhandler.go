@@ -12,7 +12,8 @@ type indexHandler struct {
 	store *sessions.CookieStore
 }
 
-func NewIndexHandler(store *sessions.CookieStore) *indexHandler {
+// NewIndexHandler returns Handler for index page.
+func NewIndexHandler(store *sessions.CookieStore) http.Handler {
 	return &indexHandler{
 		tmpl:  NewBlogTemplate("index", *NewPageData("Index")),
 		store: store,

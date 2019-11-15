@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-
-	_ "github.com/lib/pq"
 )
 
+// ErrNoUser is returned when there is no user with specific
+// data in database.
 var ErrNoUser = errors.New("db: no such user in database")
 
 // PSQLConfig represents Postgres database config.
@@ -28,33 +28,33 @@ func (c PSQLConfig) String() string {
 		c.Host, c.Port, c.User, c.Password, c.DBName)
 }
 
-// DBWrapper wraps PSQL database and provide friendly API
+// Wrapper wraps PSQL database and provide friendly API
 // to handle common operatons without writing additional
 // SQL code.
-type DBWrapper struct {
+type Wrapper struct {
 	DB *sql.DB
 }
 
-// NewDBWrapper returns wrapped and opened database.
+// NewWrapper returns wrapped and opened database.
 // Performs single ping to that database. Returns error
 // whenever something goes wrong.
-func NewDBWrapper(config PSQLConfig) (DBWrapper, error) {
+func NewWrapper(config PSQLConfig) (Wrapper, error) {
 	db, err := sql.Open("postgres", config.String())
 	if err != nil {
-		return DBWrapper{}, err
+		return Wrapper{}, err
 	}
 
 	err = db.Ping()
 	if err != nil {
-		return DBWrapper{}, err
+		return Wrapper{}, err
 	}
 
-	return DBWrapper{DB: db}, nil
+	return Wrapper{DB: db}, nil
 }
 
 // SetUser registers given User model in wrapped database.
 // TODO: Test it.
-func (wrapper DBWrapper) SetUser(user User) error {
+func (wrapper Wrapper) SetUser(user User) error {
 	statement := `
 	INSERT INTO blog_user (username, password, email, created_on, last_login)
 	VALUES
@@ -78,7 +78,7 @@ func (wrapper DBWrapper) SetUser(user User) error {
 // (check init.sql script for further information about data
 // structures in database).
 // TODO: Test it.
-func (wrapper DBWrapper) GetUser(username string) (User, error) {
+func (wrapper Wrapper) GetUser(username string) (User, error) {
 	user := User{}
 	statement := `
 	SELECT

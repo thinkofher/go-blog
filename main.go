@@ -25,7 +25,7 @@ func init() {
 
 func main() {
 
-	dbwrapper, err := db.NewDBWrapper(CONFIG)
+	dbwrapper, err := db.NewWrapper(CONFIG)
 	if err != nil {
 		panic(err)
 	}

@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/gorilla/sessions"
 	"github.com/thinkofher/go-blog/app/login"
 )
 
@@ -18,7 +18,8 @@ type loginHandler struct {
 	store *sessions.CookieStore
 }
 
-func NewLoginHandler(db login.DBClient, store *sessions.CookieStore) *loginHandler {
+// NewLoginHandler returns Handler for login page.
+func NewLoginHandler(db login.DBClient, store *sessions.CookieStore) http.Handler {
 	return &loginHandler{
 		tmpl:  NewBlogTemplate("login", *NewPageData("Login")),
 		db:    db,
@@ -26,6 +27,7 @@ func NewLoginHandler(db login.DBClient, store *sessions.CookieStore) *loginHandl
 	}
 }
 
+// ServeHTTP satisfies http.Handler interface.
 func (h loginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := h.tmpl.Template()
 	if err != nil {
