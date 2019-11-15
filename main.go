@@ -11,6 +11,9 @@ import (
 	_ "github.com/lib/pq"
 
 	"github.com/thinkofher/go-blog/app"
+	"github.com/thinkofher/go-blog/app/index"
+	"github.com/thinkofher/go-blog/app/login"
+	"github.com/thinkofher/go-blog/app/register"
 	"github.com/thinkofher/go-blog/db"
 )
 
@@ -25,7 +28,7 @@ func init() {
 
 func main() {
 
-	dbwrapper, err := db.NewWrapper(CONFIG)
+	dbwrapper, err := db.NewWrapper(DBCONFIG)
 	if err != nil {
 		panic(err)
 	}
@@ -38,23 +41,22 @@ func main() {
 
 	r := mux.NewRouter()
 	r.PathPrefix("/static/").Handler(fs).Methods("GET")
-	r.Path("/logout").HandlerFunc(app.Logout(store)).Methods("GET")
+	r.Path("/logout").HandlerFunc(app.Logout(store, APPCONFIG)).Methods("GET")
 
 	nonUsers := r.PathPrefix("").Subrouter()
 
-	login := app.NewLoginHandler(dbwrapper, store)
-	nonUsers.Path("/").Handler(login).Methods("GET", "POST")
-	nonUsers.Path("/login").Handler(login).Methods("GET", "POST")
+	loginHandler := login.NewHandler(dbwrapper, store, APPCONFIG)
+	nonUsers.Path("/").Handler(loginHandler).Methods("GET", "POST")
+	nonUsers.Path("/login").Handler(loginHandler).Methods("GET", "POST")
 	nonUsers.Path("/register").Handler(
-		app.NewRegisterHandler(dbwrapper, store)).Methods("GET", "POST")
-	nonUsers.Use(app.NonUsersOnly(store))
+		register.NewHandler(dbwrapper, store, APPCONFIG)).Methods("GET", "POST")
+	nonUsers.Use(app.NonUsersOnly(store, APPCONFIG))
 
 	auth := r.PathPrefix("/index").Subrouter()
 
-	auth.Path("").Handler(app.NewIndexHandler(store)).Methods("GET")
-	auth.Use(app.AuthenticationMiddleware(store))
+	auth.Path("").Handler(index.NewHandler(store, APPCONFIG)).Methods("GET")
+	auth.Use(app.AuthenticationMiddleware(store, APPCONFIG))
 
 	log.Println("Starting application at port ':8080'.")
-
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

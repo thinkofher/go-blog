@@ -1,4 +1,4 @@
-package app
+package register
 
 import (
 	"log"
@@ -6,33 +6,36 @@ import (
 
 	"github.com/gorilla/sessions"
 
-	"github.com/thinkofher/go-blog/app/register"
+	"github.com/thinkofher/go-blog/app/blog"
+	"github.com/thinkofher/go-blog/app/utils"
 	"github.com/thinkofher/go-blog/db"
 )
 
-type registerHandler struct {
-	tmpl  BlogTemplate
-	db    register.DBClient
-	store *sessions.CookieStore
+type handler struct {
+	tmpl   blog.Renderer
+	db     DBClient
+	store  *sessions.CookieStore
+	config utils.AppConfig
 }
 
-// NewRegisterHandler returns Handler for register page.
-func NewRegisterHandler(db register.DBClient, store *sessions.CookieStore) http.Handler {
-	return &registerHandler{
-		tmpl:  NewBlogTemplate("register", *NewPageData("Register")),
-		db:    db,
-		store: store,
+// NewHandler returns Handler for register page.
+func NewHandler(db DBClient, store *sessions.CookieStore, config utils.AppConfig) http.Handler {
+	return &handler{
+		tmpl:   blog.NewRenderer("register", *blog.NewData("Register")),
+		db:     db,
+		store:  store,
+		config: config,
 	}
 }
 
 // ServeHTTP satisfies http.Handler interface.
-func (h registerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := h.tmpl.Template()
+func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := h.tmpl.Render()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	session, err := h.store.Get(r, SessionName)
+	session, err := h.store.Get(r, h.config.SessionName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -73,7 +76,7 @@ func (h registerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := h.tmpl.TemplateData()
+	data := h.tmpl.Data()
 	if flashes := session.Flashes(); len(flashes) > 0 {
 		data.SetFlashes(flashes)
 	}
@@ -84,7 +87,7 @@ func (h registerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = tmpl.ExecuteTemplate(w, templatesBase, data); err != nil {
+	if err = tmpl.ExecuteTemplate(w, blog.TemplatesBase, data); err != nil {
 		log.Fatal("Could not execute register templates.")
 	}
 }

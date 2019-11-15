@@ -1,4 +1,4 @@
-package app
+package login
 
 import (
 	"log"
@@ -7,34 +7,35 @@ import (
 	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/thinkofher/go-blog/app/login"
+	"github.com/thinkofher/go-blog/app/blog"
+	"github.com/thinkofher/go-blog/app/utils"
 )
 
-var userCookieKey = "user-cookie"
-
-type loginHandler struct {
-	tmpl  BlogTemplate
-	db    login.DBClient
-	store *sessions.CookieStore
+type handler struct {
+	tmpl   blog.Renderer
+	db     DBClient
+	store  *sessions.CookieStore
+	config utils.AppConfig
 }
 
-// NewLoginHandler returns Handler for login page.
-func NewLoginHandler(db login.DBClient, store *sessions.CookieStore) http.Handler {
-	return &loginHandler{
-		tmpl:  NewBlogTemplate("login", *NewPageData("Login")),
-		db:    db,
-		store: store,
+// NewHandler returns Handler for login page.
+func NewHandler(db DBClient, store *sessions.CookieStore, config utils.AppConfig) http.Handler {
+	return &handler{
+		tmpl:   blog.NewRenderer("login", *blog.NewData("Login")),
+		db:     db,
+		store:  store,
+		config: config,
 	}
 }
 
 // ServeHTTP satisfies http.Handler interface.
-func (h loginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := h.tmpl.Template()
+func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := h.tmpl.Render()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	session, err := h.store.Get(r, SessionName)
+	session, err := h.store.Get(r, h.config.SessionName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -72,7 +73,7 @@ func (h loginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		userCookie := fullUserData.ToPublicUserData()
 
-		session.Values[userCookieKey] = userCookie
+		session.Values[h.config.UserCookieKey] = userCookie
 		err = session.Save(r, w)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -82,7 +83,7 @@ func (h loginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := h.tmpl.TemplateData()
+	data := h.tmpl.Data()
 	if flashes := session.Flashes(); len(flashes) > 0 {
 		data.SetFlashes(flashes)
 	}
@@ -93,7 +94,7 @@ func (h loginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = tmpl.ExecuteTemplate(w, templatesBase, data); err != nil {
+	if err = tmpl.ExecuteTemplate(w, blog.TemplatesBase, data); err != nil {
 		log.Fatal("Could not execute login templates.")
 	}
 }
