@@ -12,13 +12,18 @@
 		<title>GoBlog - {{ .Title }}</title>
 	</head>
 	<body>
-		<div class="container">
-			<nav class="navbar navbar-light bg-light">
-				<a class="navbar-brand">go-blog</a>
-				{{ template "header" . }}
-			</nav>
+		<nav class="navbar sticky-top navbar-dark bg-dark">
+			<a class="navbar-brand text-white">go-blog</a>
+			{{ template "header" . }}
+		</nav>
+		<div class="jumbotron">
+			{{ template "content" . }}
 		</div>
-		<div class="container">{{ template "content" . }}</div>
+		<footer class="page-footer font-small blue">
+			<div class="footer-copyright text-center py-3">&copy; 2019 Beniamin Dudek<br>
+				<a href="https://github.com/thinkofher">github.com/thinkofher</a>
+			</div>
+		</footer>
 
 		<!-- Bootstrap JS -->
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
