@@ -33,20 +33,28 @@ func main() {
 
 	log.Println("Connection to database succesfull!")
 
-	fs := http.StripPrefix("/static/", http.FileServer(http.Dir("./static/")))
+	fs := http.StripPrefix("/static/",
+		http.FileServer(http.Dir("./static/")))
 
 	r := mux.NewRouter()
-
-	r.Path("/").Handler(app.NewLoginHandler(dbwrapper, store)).Methods("GET", "POST")
-	r.Path("/login").Handler(app.NewLoginHandler(dbwrapper, store)).Methods("GET", "POST")
-	r.Path("/register").Handler(app.NewRegisterHandler(dbwrapper, store)).Methods("GET", "POST")
-	r.Path("/logout").HandlerFunc(app.Logout(store)).Methods("GET")
 	r.PathPrefix("/static/").Handler(fs).Methods("GET")
+	r.Path("/logout").HandlerFunc(app.Logout(store)).Methods("GET")
 
-	authRouter := r.PathPrefix("/index").Subrouter()
+	nonUsers := r.PathPrefix("").Subrouter()
 
-	authRouter.Path("").Handler(app.NewIndexHandler(store)).Methods("GET")
-	authRouter.Use(app.AuthenticationMiddleware(store))
+	login := app.NewLoginHandler(dbwrapper, store)
+	nonUsers.Path("/").Handler(login).Methods("GET", "POST")
+	nonUsers.Path("/login").Handler(login).Methods("GET", "POST")
+	nonUsers.Path("/register").Handler(
+		app.NewRegisterHandler(dbwrapper, store)).Methods("GET", "POST")
+	nonUsers.Use(app.NonUsersOnly(store))
+
+	auth := r.PathPrefix("/index").Subrouter()
+
+	auth.Path("").Handler(app.NewIndexHandler(store)).Methods("GET")
+	auth.Use(app.AuthenticationMiddleware(store))
+
+	log.Println("Starting application at port ':8080'.")
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
