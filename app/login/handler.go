@@ -42,44 +42,7 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodPost {
-		username := r.FormValue("username")
-		password := r.FormValue("password")
-
-		fullUserData, err := h.db.GetUser(username)
-
-		if err != nil {
-			session.AddFlash("There is no user with given username.")
-			err = session.Save(r, w)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			http.Redirect(w, r, "/login", http.StatusFound)
-			return
-		}
-
-		if err = bcrypt.CompareHashAndPassword(
-			fullUserData.HashedPassword, []byte(password)); err != nil {
-
-			session.AddFlash("Incorrect password.")
-			err = session.Save(r, w)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			http.Redirect(w, r, "/login", http.StatusFound)
-			return
-		}
-
-		userCookie := fullUserData.ToPublicUserData()
-
-		session.Values[h.config.UserCookieKey] = userCookie
-		err = session.Save(r, w)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		http.Redirect(w, r, "/index", http.StatusFound)
+		h.handlePostMethod(w, r, session)
 		return
 	}
 
@@ -97,4 +60,51 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err = tmpl.ExecuteTemplate(w, blog.TemplatesBase, data); err != nil {
 		log.Fatal("Could not execute login templates.")
 	}
+}
+
+// getForms method returns values of username and password
+// from forms.
+func (h handler) getForms(r *http.Request) (string, string) {
+	return r.FormValue("username"), r.FormValue("password")
+}
+
+func (h handler) handlePostMethod(
+	w http.ResponseWriter, r *http.Request, session *sessions.Session) {
+	username, password := h.getForms(r)
+
+	fullUserData, err := h.db.GetUser(username)
+
+	if err != nil {
+		session.AddFlash("There is no user with given username.")
+		err = session.Save(r, w)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
+
+	if err = bcrypt.CompareHashAndPassword(
+		fullUserData.HashedPassword, []byte(password)); err != nil {
+
+		session.AddFlash("Incorrect password.")
+		err = session.Save(r, w)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
+
+	userCookie := fullUserData.ToPublicUserData()
+
+	session.Values[h.config.UserCookieKey] = userCookie
+	err = session.Save(r, w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/index", http.StatusFound)
 }
