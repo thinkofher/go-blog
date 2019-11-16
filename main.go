@@ -45,9 +45,10 @@ func main() {
 
 	nonUsers := r.PathPrefix("").Subrouter()
 
-	loginHandler := login.NewHandler(dbwrapper, store, APPCONFIG)
-	nonUsers.Path("/").Handler(loginHandler).Methods("GET", "POST")
-	nonUsers.Path("/login").Handler(loginHandler).Methods("GET", "POST")
+	nonUsers.Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/login", http.StatusFound)
+	})
+	nonUsers.Path("/login").Handler(login.NewHandler(dbwrapper, store, APPCONFIG)).Methods("GET", "POST")
 	nonUsers.Path("/register").Handler(
 		register.NewHandler(dbwrapper, store, APPCONFIG)).Methods("GET", "POST")
 	nonUsers.Use(app.NonUsersOnly(store, APPCONFIG))
