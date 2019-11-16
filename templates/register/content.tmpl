@@ -1,11 +1,11 @@
 {{ define "content" }}
-	{{ range $flash := .Flashes }}
-		<div class="alert alert-primary" role="alert">
-			{{ $flash }}
-		</div>
-	{{ end }}
-	<form action="/register" method="post">
-		<div class="container" style="width: 350px;">
+	<div class="container" style="width: 350px;">
+		{{ range $flash := .Flashes }}
+			<div class="alert alert-primary" role="alert">
+				{{ $flash }}
+			</div>
+		{{ end }}
+		<form action="/register" method="post">
 			<div class="form-group">
 				<label for="username">Username</label>
 				<input type="username" name="username" class="form-control" id="username" placeholder="Enter username">
@@ -20,6 +20,6 @@
 				<input type="password" name="password" class="form-control" id="password" placeholder="Password">
 			</div>
 			<button type="submit" class="btn btn-primary">Submit</button>
-		</div>
-	</form>
+		</form>
+	</div>
 {{ end }}
