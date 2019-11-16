@@ -42,37 +42,7 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodPost {
-		// err := r.ParseForm()
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		user, _ := db.NewUser(
-			r.FormValue("username"),
-			r.FormValue("password"),
-			r.FormValue("email"))
-
-		err = h.db.SetUser(user)
-		if err != nil {
-			session.AddFlash("Username or Email are already taken.")
-
-			err = session.Save(r, w)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-
-			http.Redirect(w, r, "/register", http.StatusFound)
-			return
-		}
-
-		session.AddFlash("Your account has been created.")
-		err = session.Save(r, w)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		http.Redirect(w, r, "/login", http.StatusFound)
+		h.handlePostMethod(w, r, session)
 		return
 	}
 
@@ -90,4 +60,43 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err = tmpl.ExecuteTemplate(w, blog.TemplatesBase, data); err != nil {
 		log.Fatal("Could not execute register templates.")
 	}
+}
+
+// getForms method returns values of username, email and
+// password from forms.
+func (h handler) getForms(r *http.Request) (username string, email string, password string) {
+	username = r.FormValue("username")
+	email = r.FormValue("email")
+	password = r.FormValue("password")
+	return
+}
+
+func (h handler) handlePostMethod(
+	w http.ResponseWriter, r *http.Request, session *sessions.Session) {
+	username, email, password := h.getForms(r)
+
+	// TODO: Handle possible errors.
+	user, _ := db.NewUser(username, password, email)
+
+	err := h.db.SetUser(user)
+	if err != nil {
+		session.AddFlash("Username or Email are already taken.")
+
+		err = session.Save(r, w)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		http.Redirect(w, r, "/register", http.StatusFound)
+		return
+	}
+
+	session.AddFlash("Your account has been created.")
+	err = session.Save(r, w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/login", http.StatusFound)
 }
