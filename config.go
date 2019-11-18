@@ -5,10 +5,6 @@ import (
 	"github.com/thinkofher/go-blog/db"
 )
 
-// SESSIONNAME represents default name of session for
-// go-blog app.
-const SESSIONNAME = "goblog-session"
-
 // APPCONFIG represents configuration of application.
 // Feel free to choose your own values.
 var APPCONFIG = utils.AppConfig{
