@@ -51,7 +51,6 @@ func NonUsersOnly(store *sessions.CookieStore, config utils.AppConfig) mux.Middl
 			_, ok := session.Values[config.UserCookieKey]
 
 			if ok {
-				session.AddFlash("You have to be logged out.")
 				err = session.Save(r, w)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
