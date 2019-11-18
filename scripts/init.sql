@@ -13,8 +13,6 @@ CREATE TABLE post (
     post_id SERIAL,
     author_id SERIAL REFERENCES blog_user(user_id),
     body TEXT NOT NULL,
-    upvotes INTEGER NOT NULL,
-    downvotes INTEGER NOT NULL,
     created_on TIMESTAMP NOT NULL,
     PRIMARY KEY (post_id, author_id)
 );
