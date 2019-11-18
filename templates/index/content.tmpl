@@ -1,8 +1,11 @@
 {{ define "content" }}
-	{{ range $flash := .Flashes }}
-		<div class="alert alert-primary" role="alert">
-			{{ $flash }}
-		</div>
-	{{ end }}
-	<p>This is sample index. Only for logged users.</p>
+	<div class="container">
+		{{ range $flash := .Flashes }}
+			<div class="alert alert-primary" role="alert">
+				{{ $flash }}
+			</div>
+		{{ end }}
+	</div>
+	{{ template "posts" . }}
+	{{ template "newpost" }}
 {{ end }}

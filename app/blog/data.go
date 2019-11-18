@@ -10,6 +10,7 @@ type Data struct {
 	Title   string
 	User    db.PublicUserData
 	Flashes []interface{}
+	Posts   []db.Post
 }
 
 // NewData returns pointer to PageData with

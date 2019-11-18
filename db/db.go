@@ -71,25 +71,10 @@ func (wrapper Wrapper) SetUser(user User) error {
 	return nil
 }
 
-// GetUser returns user data in form of User struct.
-// Returns ErrNoUser, when there are not any user with
-// given username.
-// Pancics, when there aren't appropriate table in database
-// (check init.sql script for further information about data
-// structures in database).
-// TODO: Test it.
-func (wrapper Wrapper) GetUser(username string) (User, error) {
-	user := User{}
-	statement := `
-	SELECT
-		user_id, username, password,
-		email, created_on, last_login
-	FROM
-		blog_user
-	WHERE
-		username = $1;
-	`
-	row := wrapper.DB.QueryRow(statement, username)
+func (wrapper Wrapper) queryUser(queryFunc func() *sql.Row) (User, error) {
+	var user User
+
+	row := queryFunc()
 
 	err := row.Scan(&user.ID, &user.Username, &user.HashedPassword,
 		&user.Email, &user.CreatedOn, &user.LastLogin)
@@ -101,4 +86,112 @@ func (wrapper Wrapper) GetUser(username string) (User, error) {
 	}
 
 	return user, nil
+}
+
+// GetUser returns user, with given username, data in form of
+// User struct.
+// Returns ErrNoUser, when there are not any user with
+// given username.
+// Pancics, when there aren't appropriate table in database
+// (check init.sql script for further information about data
+// structures in database).
+// TODO: Test it.
+func (wrapper Wrapper) GetUser(username string) (User, error) {
+	return wrapper.queryUser(func() *sql.Row {
+		statement := `
+		SELECT
+			user_id, username, password,
+			email, created_on, last_login
+		FROM
+			blog_user
+		WHERE
+			username = $1;
+		`
+		return wrapper.DB.QueryRow(statement, username)
+	})
+}
+
+// GetUserByID returns user, with given ID, data in form of
+// User struct.
+// Returns ErrNoUser, when there are not any user with
+// given username.
+// Pancics, when there aren't appropriate table in database
+// (check init.sql script for further information about data
+// structures in database).
+// TODO: Test it.
+func (wrapper Wrapper) GetUserByID(id int) (User, error) {
+	return wrapper.queryUser(func() *sql.Row {
+		statement := `
+		SELECT
+			user_id, username, password,
+			email, created_on, last_login
+		FROM
+			blog_user
+		WHERE
+			user_id = $1;
+		`
+		return wrapper.DB.QueryRow(statement, id)
+	})
+}
+
+// SetPost inserts given Post struct into wrapped database.
+// Return nil, when transaction ended with success.
+func (wrapper Wrapper) SetPost(post Post) error {
+	statement := `
+	INSERT INTO post (author_id, body, created_on)
+	VALUES
+		($1, $2, $3);
+	`
+	_, err := wrapper.DB.Exec(
+		statement, post.Author.ID, post.Body, post.CreatedOn)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GetPosts returns all posts from database.
+func (wrapper Wrapper) GetPosts() ([]Post, error) {
+	statement := `
+	SELECT
+		author_id, body, created_on
+	FROM
+		post
+	ORDER BY
+		created_on DESC;
+	`
+
+	rows, err := wrapper.DB.Query(statement)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []Post
+	var post Post
+	var userID int
+
+	for rows.Next() {
+		err = rows.Scan(&userID, &post.Body, &post.CreatedOn)
+		if err != nil {
+			return nil, err
+		}
+
+		user, err := wrapper.GetUserByID(userID)
+		if err != nil {
+			return nil, err
+		}
+
+		post.Author = user
+		posts = append(posts, post)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	return posts, nil
 }
