@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 )
 
 // ErrNoUser is returned when there is no user with specific
@@ -140,6 +141,25 @@ func (wrapper Wrapper) GetUserByID(id int) (User, error) {
 		`
 		return wrapper.DB.QueryRow(statement, id)
 	})
+}
+
+func (wrapper Wrapper) UpdateLastLogin(id int) error {
+	statement := `
+	UPDATE blog_user
+	SET
+		last_login = $1
+	WHERE
+		user_id = $2;
+	`
+
+	_, err := wrapper.DB.Exec(
+		statement, time.Now(), id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // SetPost inserts given Post struct into wrapped database.
