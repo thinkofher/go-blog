@@ -10,9 +10,13 @@
 					<small class="text-muted">{{ $post.CreatedOn.Format "Jan _2 2006 15:04" }}</small>
 					<p>{{ $post.Body }}</p>
 					{{ if eq $post.Author.ID $userid }}
+						{{ template "delete" $post.ID }}
 						<div class="btn-group btn-group-sm" role="group">
 							<button type="button" class="btn btn-outline-primary">Edit</button>
-							<button type="button" class="btn btn-outline-danger">Delete</button>
+							<!-- <a href="/post/delete/{{ $post.ID }}" role="button" class="btn btn-outline-danger">Delete</a> -->
+							<button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModalx{{ $post.ID }}">
+							Delete
+							</button>
 						</div>
 					{{ end }}
 				</div>

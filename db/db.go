@@ -10,6 +10,14 @@ import (
 // data in database.
 var ErrNoUser = errors.New("db: no such user in database")
 
+// ErrNoPost is returned when there is no post with specific
+// data in database.
+var ErrNoPost = errors.New("db: no such post in database")
+
+// ErrMismatchedAuthors is returned when user is trying to delete post, that
+// not belong to him.
+var ErrMismatchedAuthors = errors.New("db: this posts does not belong to that user")
+
 // PSQLConfig represents Postgres database config.
 type PSQLConfig struct {
 	Host     string
@@ -156,7 +164,7 @@ func (wrapper Wrapper) SetPost(post Post) error {
 func (wrapper Wrapper) GetPosts() ([]Post, error) {
 	statement := `
 	SELECT
-		author_id, body, created_on
+		post_id, author_id, body, created_on
 	FROM
 		post
 	ORDER BY
@@ -174,7 +182,7 @@ func (wrapper Wrapper) GetPosts() ([]Post, error) {
 	var userID int
 
 	for rows.Next() {
-		err = rows.Scan(&userID, &post.Body, &post.CreatedOn)
+		err = rows.Scan(&post.ID, &userID, &post.Body, &post.CreatedOn)
 		if err != nil {
 			return nil, err
 		}
@@ -194,4 +202,70 @@ func (wrapper Wrapper) GetPosts() ([]Post, error) {
 	}
 
 	return posts, nil
+}
+
+// RemovePost deletes post from wrapped database.
+func (wrapper Wrapper) RemovePost(postID int, authorID int) error {
+	statement := `
+	DELETE FROM post
+	WHERE
+		post_id = $1 AND
+		author_id = $2;
+	`
+
+	post, err := wrapper.GetPostByID(postID)
+	if err != nil {
+		return err
+	}
+
+	// Check if author of the post is the one given in function
+	// arguments.
+	if post.Author.ID != authorID {
+		return ErrMismatchedAuthors
+	}
+
+	_, err = wrapper.DB.Exec(
+		statement, postID, authorID)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (wrapper Wrapper) queryPost(queryFunc func() *sql.Row) (Post, error) {
+	var post Post
+
+	row := queryFunc()
+
+	err := row.Scan(&post.Author.ID, &post.ID, &post.Body, &post.CreatedOn)
+	if err == sql.ErrNoRows {
+		// This means, there is no such post in database
+		return post, ErrNoPost
+	} else if err != nil {
+		panic(err)
+	}
+
+	post.Author, err = wrapper.GetUserByID(post.Author.ID)
+	if err != nil {
+		return post, err
+	}
+
+	return post, nil
+}
+
+// GetPostByID method returns post with given ID.
+func (wrapper Wrapper) GetPostByID(postID int) (Post, error) {
+	return wrapper.queryPost(func() *sql.Row {
+		statement := `
+		SELECT
+			author_id, post_id, body, created_on
+		FROM
+			post
+		WHERE
+			post_id = $1;
+		`
+		return wrapper.DB.QueryRow(statement, postID)
+	})
 }

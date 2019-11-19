@@ -61,6 +61,7 @@ func main() {
 
 	postsHandlers := r.PathPrefix("/post").Subrouter()
 	postsHandlers.Path("/new").HandlerFunc(posts.NewPost(dbwrapper, store, APPCONFIG)).Methods("POST")
+	postsHandlers.Path("/delete/{id:[0-9]+}").HandlerFunc(posts.RemovePost(dbwrapper, store, APPCONFIG))
 	postsHandlers.Use(app.AuthenticationMiddleware(store, APPCONFIG))
 
 	log.Println("Starting application at port ':8080'.")
