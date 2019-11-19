@@ -1,0 +1,7 @@
+{{ define "flashes" }}
+	{{ range $flash := . }}
+		<div class="alert alert-primary" role="alert">
+			{{ $flash }}
+		</div>
+	{{ end }}
+{{ end }}

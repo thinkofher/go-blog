@@ -1,11 +1,4 @@
 {{ define "content" }}
-	<div class="container">
-		{{ range $flash := .Flashes }}
-			<div class="alert alert-primary" role="alert">
-				{{ $flash }}
-			</div>
-		{{ end }}
-	</div>
 	{{ template "posts" . }}
 	{{ template "newpost" }}
 {{ end }}

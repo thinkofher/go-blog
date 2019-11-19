@@ -1,10 +1,6 @@
 {{ define "content" }}
 	<div class="container" style="width: 350px;">
-		{{ range $flash := .Flashes }}
-			<div class="alert alert-primary" role="alert">
-				{{ $flash }}
-			</div>
-		{{ end }}
+		{{ template "flashes" .Flashes }}
 		<form action="/register" method="post">
 			<div class="form-group">
 				<label for="username">Username</label>

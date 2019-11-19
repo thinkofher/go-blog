@@ -2,6 +2,7 @@
 	{{ $userid := .User.ID }}
 	<ul class="list-unstyled">
 		<div class="container">
+		{{ template "flashes" .Flashes }}
 		{{ range $post := .Posts }}
 			<li class="media">
 				<img class="mr-3 rounded-circle" src="static/images/blank_avatar.jpg" alt="User avatar" style="width: 64px; height: 64px;">
