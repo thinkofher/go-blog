@@ -1,0 +1,30 @@
+{{ define "editpost" }}
+	<div class="modal fade" id="editModalx{{ .ID }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="editModalLabel">Edit Post</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<form method="post" action="/post/edit/{{ .ID }}">
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="post-body" class="col-form-label">Write your amendments.</label>
+							<textarea class="form-control" id="post-body" name="post-body">{{ .Body }}</textarea>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">
+							<span title="Cancel" class="oi" data-glyph="x"></span>
+						</button>
+						<button type="submit" class="btn btn-primary">
+							<span title="Edit" class="oi" data-glyph="pencil"></span>
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+{{ end }}

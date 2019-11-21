@@ -60,6 +60,10 @@ func router() *mux.Router {
 	postsHandlers.
 		Path("/delete/{id:[0-9]+}").
 		HandlerFunc(posts.RemovePost(dbwrapper, store, APPCONFIG)).
+		Methods("POST", "GET")
+	postsHandlers.
+		Path("/edit/{id:[0-9]+}").
+		HandlerFunc(posts.EditPost(dbwrapper, store, APPCONFIG)).
 		Methods("POST")
 	postsHandlers.
 		Use(app.AuthenticationMiddleware(store, APPCONFIG))

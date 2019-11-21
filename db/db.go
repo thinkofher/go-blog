@@ -296,3 +296,22 @@ func (wrapper Wrapper) GetPosts() ([]Post, error) {
 		return wrapper.DB.Query(statement)
 	})
 }
+
+// UpdatePost updates body of post with its id.
+func (wrapper Wrapper) UpdatePost(post Post) error {
+	statement := `
+	UPDATE post
+	SET
+		body = $1
+	WHERE
+		post_id = $2;
+	`
+	_, err := wrapper.DB.Exec(
+		statement, post.Body, post.ID)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

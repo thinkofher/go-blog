@@ -12,8 +12,9 @@
 					<p>{{ $post.Body }}</p>
 					{{ if eq $post.Author.ID $userid }}
 						{{ template "delete" $post.ID }}
+						{{ template "editpost" $post }}
 						<div class="btn-group btn-group-sm" role="group">
-							<button type="button" class="btn btn-outline-primary">
+							<button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#editModalx{{ $post.ID }}">
 								<span class="oi" title="Edit" data-glyph="pencil"></span>
 							</button>
 							<button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModalx{{ $post.ID }}">
