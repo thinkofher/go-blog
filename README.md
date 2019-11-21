@@ -36,3 +36,4 @@ Used technologies
 - [PostgreSQL](https://www.postgresql.org/)
 - [Bootstrap](https://getbootstrap.com/)
 - [podman](https://podman.io/)
+- [Open Iconic](https://useiconic.com/open/)
