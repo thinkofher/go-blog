@@ -1,0 +1,7 @@
+{{ define "content" }}
+	{{ template "user" . }}
+	<div class="container border border-secondary rounded mb-5 shadow p-3">
+		{{ template "posts" . }}
+	</div>
+	{{ template "newpost" }}
+{{ end }}

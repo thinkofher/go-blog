@@ -15,6 +15,7 @@ import (
 	"github.com/thinkofher/go-blog/app/login"
 	"github.com/thinkofher/go-blog/app/posts"
 	"github.com/thinkofher/go-blog/app/register"
+	"github.com/thinkofher/go-blog/app/user"
 	"github.com/thinkofher/go-blog/db"
 )
 
@@ -63,6 +64,10 @@ func main() {
 	postsHandlers.Path("/new").HandlerFunc(posts.NewPost(dbwrapper, store, APPCONFIG)).Methods("POST")
 	postsHandlers.Path("/delete/{id:[0-9]+}").HandlerFunc(posts.RemovePost(dbwrapper, store, APPCONFIG))
 	postsHandlers.Use(app.AuthenticationMiddleware(store, APPCONFIG))
+
+	usersHandlers := r.PathPrefix("/user").Subrouter()
+	usersHandlers.Path("/{id:[0-9]+}").Handler(user.NewHandler(dbwrapper, store, APPCONFIG)).Methods("GET")
+	usersHandlers.Use(app.AuthenticationMiddleware(store, APPCONFIG))
 
 	log.Println("Starting application at port ':8080'.")
 	log.Fatal(http.ListenAndServe(":8080", r))

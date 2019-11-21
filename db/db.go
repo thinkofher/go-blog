@@ -160,50 +160,6 @@ func (wrapper Wrapper) SetPost(post Post) error {
 	return nil
 }
 
-// GetPosts returns all posts from database.
-func (wrapper Wrapper) GetPosts() ([]Post, error) {
-	statement := `
-	SELECT
-		post_id, author_id, body, created_on
-	FROM
-		post
-	ORDER BY
-		created_on DESC;
-	`
-
-	rows, err := wrapper.DB.Query(statement)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var posts []Post
-	var post Post
-	var userID int
-
-	for rows.Next() {
-		err = rows.Scan(&post.ID, &userID, &post.Body, &post.CreatedOn)
-		if err != nil {
-			return nil, err
-		}
-
-		user, err := wrapper.GetUserByID(userID)
-		if err != nil {
-			return nil, err
-		}
-
-		post.Author = user
-		posts = append(posts, post)
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, err
-	}
-
-	return posts, nil
-}
-
 // RemovePost deletes post from wrapped database.
 func (wrapper Wrapper) RemovePost(postID int, authorID int) error {
 	statement := `
@@ -267,5 +223,76 @@ func (wrapper Wrapper) GetPostByID(postID int) (Post, error) {
 			post_id = $1;
 		`
 		return wrapper.DB.QueryRow(statement, postID)
+	})
+}
+
+func (wrapper Wrapper) queryPosts(queryFunc func() (*sql.Rows, error)) ([]Post, error) {
+
+	rows, err := queryFunc()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []Post
+	var post Post
+	var userID int
+
+	for rows.Next() {
+		err = rows.Scan(&post.ID, &userID, &post.Body, &post.CreatedOn)
+		if err != nil {
+			return nil, err
+		}
+
+		user, err := wrapper.GetUserByID(userID)
+		if err != nil {
+			return nil, err
+		}
+
+		post.Author = user
+		posts = append(posts, post)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	return posts, nil
+
+}
+
+// GetPostsByUser method returns all posts written by user with
+// given id.
+func (wrapper Wrapper) GetPostsByUser(userid int) ([]Post, error) {
+	return wrapper.queryPosts(func() (*sql.Rows, error) {
+		statement := `
+		SELECT
+			post_id, author_id, body, created_on
+		FROM
+			post
+		WHERE
+			author_id = $1
+		ORDER BY
+			created_on DESC;
+		`
+
+		return wrapper.DB.Query(statement, userid)
+	})
+}
+
+// GetPosts returns all posts from database.
+func (wrapper Wrapper) GetPosts() ([]Post, error) {
+	return wrapper.queryPosts(func() (*sql.Rows, error) {
+		statement := `
+		SELECT
+			post_id, author_id, body, created_on
+		FROM
+			post
+		ORDER BY
+			created_on DESC;
+		`
+
+		return wrapper.DB.Query(statement)
 	})
 }

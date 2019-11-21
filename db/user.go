@@ -45,14 +45,18 @@ func NewUser(username, password, email string) (User, error) {
 // cookie store.
 func (u User) ToPublicUserData() *PublicUserData {
 	return &PublicUserData{
-		ID:       u.ID,
-		Username: u.Username,
+		ID:        u.ID,
+		Username:  u.Username,
+		CreatedOn: u.CreatedOn,
+		LastLogin: u.LastLogin,
 	}
 }
 
 // PublicUserData represents user information
 // to store in cookies for authorization.
 type PublicUserData struct {
-	ID       int
-	Username string
+	ID        int
+	Username  string
+	CreatedOn time.Time
+	LastLogin time.Time
 }
