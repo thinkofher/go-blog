@@ -100,6 +100,13 @@ func (h handler) handlePostMethod(
 
 	userCookie := fullUserData.ToPublicUserData()
 
+	// Update user last login in database
+	err = h.db.UpdateLastLogin(fullUserData.ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	session.Values[h.config.UserCookieKey] = userCookie
 	err = session.Save(r, w)
 	if err != nil {
