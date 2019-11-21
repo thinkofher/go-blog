@@ -13,10 +13,11 @@
 					{{ if eq $post.Author.ID $userid }}
 						{{ template "delete" $post.ID }}
 						<div class="btn-group btn-group-sm" role="group">
-							<button type="button" class="btn btn-outline-primary">Edit</button>
-							<!-- <a href="/post/delete/{{ $post.ID }}" role="button" class="btn btn-outline-danger">Delete</a> -->
+							<button type="button" class="btn btn-outline-primary">
+								<span class="oi" title="Edit" data-glyph="pencil"></span>
+							</button>
 							<button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModalx{{ $post.ID }}">
-							Delete
+								<span class="oi" title="Delete" data-glyph="trash"></span>
 							</button>
 						</div>
 					{{ end }}
