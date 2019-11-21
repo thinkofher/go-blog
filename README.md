@@ -18,6 +18,7 @@ Follow below instructions to install go-blog.
     git clone https://github.com/thinkofher/go-blog.git && cd go-blog
     go get -u .
     ./init_podman.sh
+    ./download_fonts.sh
     podman start goblog-db
     go build .
     ./go-blog
