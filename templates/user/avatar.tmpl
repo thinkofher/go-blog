@@ -1,0 +1,37 @@
+{{ define "avatar" }}
+<div>
+	<button type="button" class="badge badge-secondary" data-toggle="modal" data-target="#avatarModal">
+		<span class="oi mr-1" data-glyph="cloud-upload" title="Upload Avatar" aria-hidden="true"></span>
+		Upload Avatar
+	</button>
+</div>
+
+<div class="modal fade" id="avatarModal" tabindex="-1" role="dialog" aria-labelledby="avatarModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Upload Avatar</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<form action="/user/upload/avatar" method="post" enctype="multipart/form-data">
+				<div class="modal-body">
+					<div class="custom-file">
+						<input name="avatar" type="file" class="custom-file-input" id="upload-avatar">
+						<label class="custom-file-label" for="upload-avatar">Choose image file...</label>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">
+						<span class="oi" title="Cancel" data-glyph="x"></span>
+					</button>
+					<button type="submit" class="btn btn-primary">
+						<span class="oi" title="Upload" data-glyph="cloud-upload"></span>
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+{{ end }}

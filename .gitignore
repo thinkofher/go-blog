@@ -14,3 +14,7 @@
 # Temporary files created by fresh
 tmp/
 static/font
+
+# Ignore all avatars except default
+static/images/
+!static/images/blank_avatar.jpg

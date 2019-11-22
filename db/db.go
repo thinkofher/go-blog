@@ -65,13 +65,13 @@ func NewWrapper(config PSQLConfig) (Wrapper, error) {
 // TODO: Test it.
 func (wrapper Wrapper) SetUser(user User) error {
 	statement := `
-	INSERT INTO blog_user (username, password, email, created_on, last_login)
+	INSERT INTO blog_user (username, password, email, avatar, created_on, last_login)
 	VALUES
-		($1, $2, $3, $4, $5);
+		($1, $2, $3, $4, $5, $6);
 	`
 	_, err := wrapper.DB.Exec(
-		statement, user.Username, user.HashedPassword,
-		user.Email, user.CreatedOn, user.LastLogin)
+		statement, user.Username, user.HashedPassword, user.Email,
+		user.Avatar, user.CreatedOn, user.LastLogin)
 
 	if err != nil {
 		return err
@@ -85,7 +85,7 @@ func (wrapper Wrapper) queryUser(queryFunc func() *sql.Row) (User, error) {
 
 	row := queryFunc()
 
-	err := row.Scan(&user.ID, &user.Username, &user.HashedPassword,
+	err := row.Scan(&user.ID, &user.Username, &user.HashedPassword, &user.Avatar,
 		&user.Email, &user.CreatedOn, &user.LastLogin)
 	if err == sql.ErrNoRows {
 		// This means, there is no such user in database
@@ -109,7 +109,7 @@ func (wrapper Wrapper) GetUser(username string) (User, error) {
 	return wrapper.queryUser(func() *sql.Row {
 		statement := `
 		SELECT
-			user_id, username, password,
+			user_id, username, password, avatar,
 			email, created_on, last_login
 		FROM
 			blog_user
@@ -132,7 +132,7 @@ func (wrapper Wrapper) GetUserByID(id int) (User, error) {
 	return wrapper.queryUser(func() *sql.Row {
 		statement := `
 		SELECT
-			user_id, username, password,
+			user_id, username, password, avatar,
 			email, created_on, last_login
 		FROM
 			blog_user
@@ -154,6 +154,26 @@ func (wrapper Wrapper) UpdateLastLogin(id int) error {
 
 	_, err := wrapper.DB.Exec(
 		statement, time.Now(), id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// UpdateAvatar updates avatar filename of user with given id.
+func (wrapper Wrapper) UpdateAvatar(id int, avatar string) error {
+	statement := `
+	UPDATE blog_user
+	SET
+		avatar = $1
+	WHERE
+		user_id = $2;
+	`
+
+	_, err := wrapper.DB.Exec(
+		statement, avatar, id)
 
 	if err != nil {
 		return err

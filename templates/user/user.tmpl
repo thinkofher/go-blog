@@ -1,7 +1,7 @@
 {{ define "user" }}
 	<div class="container border border-secondary rounded mb-5 shadow p-3">
 		<div class="media mx-3 my-3">
-			<img src="/static/images/blank_avatar.jpg" class="rounded-circle mr-3" alt="{{ .PageSpecific.User.Username }}" style="width: 64px; height: 64px;">
+			<img src="/static/images/{{ .PageSpecific.User.Avatar }}" class="rounded-circle mr-3" alt="{{ .PageSpecific.User.Username }}" style="width: 64px; height: 64px;">
 			<div class="media-body">
 				<h5 class="mt-0">
 					<span class="oi mr-1" data-glyph="person" title="{{ .PageSpecific.User.Username }}" aria-hidden="true"></span>
@@ -15,6 +15,9 @@
 					<span class="oi mr-1" data-glyph="heart" title="Joined" aria-hidden="true"></span>
 					{{ .PageSpecific.User.CreatedOn.Format "Jan _2 2006 15:04" }}
 				</span>
+				{{ if eq .User.ID .PageSpecific.User.ID }}
+					{{ template "avatar" . }}
+				{{ end }}
 			</div>
 		</div>
 	</div>

@@ -75,6 +75,9 @@ func router() *mux.Router {
 		Methods("GET")
 	usersHandlers.
 		Use(app.AuthenticationMiddleware(store, APPCONFIG))
+	usersHandlers.Path("/upload/avatar").
+		HandlerFunc(user.UploadAvatar(dbwrapper, store, APPCONFIG)).
+		Methods("POST")
 
 	return r
 }

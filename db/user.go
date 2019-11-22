@@ -10,6 +10,9 @@ import (
 // go-blog application.
 const CRYPTOCOST = 14
 
+// DefaultAvatar stores string with default avatar filename.
+const DefaultAvatar = "blank_avatar.jpg"
+
 // User represents single user data from database.
 type User struct {
 	// ID is unique to every user.
@@ -17,6 +20,7 @@ type User struct {
 	Username       string
 	HashedPassword []byte
 	Email          string
+	Avatar         string
 	CreatedOn      time.Time
 	LastLogin      time.Time
 }
@@ -35,6 +39,7 @@ func NewUser(username, password, email string) (User, error) {
 		Username:       username,
 		HashedPassword: hashedPassword,
 		Email:          email,
+		Avatar:         DefaultAvatar,
 		CreatedOn:      time.Now(),
 		LastLogin:      time.Now(),
 	}, nil
@@ -49,6 +54,7 @@ func (u User) ToPublicUserData() *PublicUserData {
 		Username:  u.Username,
 		CreatedOn: u.CreatedOn,
 		LastLogin: u.LastLogin,
+		Avatar:    u.Avatar,
 	}
 }
 
@@ -57,6 +63,7 @@ func (u User) ToPublicUserData() *PublicUserData {
 type PublicUserData struct {
 	ID        int
 	Username  string
+	Avatar    string
 	CreatedOn time.Time
 	LastLogin time.Time
 }

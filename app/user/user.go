@@ -11,4 +11,6 @@ type DBClient interface {
 	// Returns complete database representation of
 	// User with given id.
 	GetUserByID(id int) (db.User, error)
+	// Uploads avatar filename of user with given id.
+	UpdateAvatar(id int, avatar string) error
 }

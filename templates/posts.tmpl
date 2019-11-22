@@ -5,7 +5,7 @@
 		{{ template "flashes" .Flashes }}
 		{{ range $post := .Posts }}
 			<li class="media">
-				<img class="mr-3 rounded-circle" src="/static/images/blank_avatar.jpg" alt="User avatar" style="width: 64px; height: 64px;">
+				<img class="mr-3 rounded-circle" src="/static/images/{{ $post.Author.Avatar }}" alt="User avatar" style="width: 64px; height: 64px;">
 				<div class="media-body mb-3">
 					<a href="/user/{{ $post.Author.ID }}"><h5 class="mt-0 mb-1">{{ $post.Author.Username }}</h5></a>
 					<small class="text-muted">{{ $post.CreatedOn.Format "Jan _2 2006 15:04" }}</small>
