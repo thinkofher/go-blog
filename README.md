@@ -13,14 +13,20 @@ Installation
 
 Before installing application, you should set `$SESSION_KEY` envriomental variable.
 
-Follow below instructions to install go-blog.
+Follow below instructions to install go-blog completely in containers.
+
+    git clone https://github.com/thinkofher/go-blog.git && cd go-blog
+    ./containers init
+
+And that's all! Now go to `http://localhost:65432` adress in your browser and start using app.
+
+You can also install goblog directly on your machine and use Postgre from container. Just follow instructions below.
 
     git clone https://github.com/thinkofher/go-blog.git && cd go-blog
     go get -u .
-    ./init_podman.sh
-    ./download_fonts.sh
-    podman start goblog-db
     go build .
+    ./containers onlydb
+    ./download_fonts.sh
     ./go-blog
 
 You can also install [fresh](https://github.com/gravityblast/fresh) and use it instead of building application every time. It's really helpful when developing new features for web apps (make sure to add `$GOPATH/bin` to your `$PATH`).
