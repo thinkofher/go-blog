@@ -7,6 +7,6 @@ RUN apk add tar wget
 
 RUN go get -d -v ./...
 RUN go build .
-RUN ./download_fonts.sh
+RUN ./configure.sh
 
-CMD ["./go-blog"]
+CMD ["./wait-for", "db:5432", "--", "./go-blog"]
