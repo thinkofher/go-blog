@@ -15,4 +15,6 @@ services:
             - "8080:8080"
         depends_on:
             - "db"
+        links:
+            - "db"
         command: ./go-blog
