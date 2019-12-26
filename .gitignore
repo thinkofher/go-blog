@@ -18,3 +18,6 @@ static/font
 # Ignore all avatars except default
 static/images/
 !static/images/blank_avatar.jpg
+
+# Ignore wait-for script
+wait-for
