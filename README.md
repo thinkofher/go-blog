@@ -16,20 +16,11 @@ Before installing application, you should set `$SESSION_KEY` envriomental variab
 Follow below instructions to install go-blog completely in containers.
 
     git clone https://github.com/thinkofher/go-blog.git && cd go-blog
-    ./containers init
+    podman-compose up -d
 
-And that's all! Now go to `http://localhost:65432` adress in your browser and start using app.
+You can also use `docker-compose` and it'll propably work, but it's not supported.
 
-You can also install goblog directly on your machine and use Postgre from container. Just follow instructions below.
-
-    git clone https://github.com/thinkofher/go-blog.git && cd go-blog
-    go get -u .
-    go build .
-    ./containers onlydb
-    ./download_fonts.sh
-    ./go-blog
-
-You can also install [fresh](https://github.com/gravityblast/fresh) and use it instead of building application every time. It's really helpful when developing new features for web apps (make sure to add `$GOPATH/bin` to your `$PATH`).
+And that's all! Now go to `http://0.0.0.0:8080` adress in your browser and start using app.
 
 Check out `config.go` file and modify it for your needs.
 
@@ -43,4 +34,5 @@ Used technologies
 - [PostgreSQL](https://www.postgresql.org/)
 - [Bootstrap](https://getbootstrap.com/)
 - [podman](https://podman.io/)
+- [podman-compose](https://github.com/containers/podman-compose)
 - [Open Iconic](https://useiconic.com/open/)
